@@ -1,0 +1,58 @@
+name: Sysdig Image Scan
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build vote image
+      run: |
+        docker build -t ${{ secrets.DOCKERHUB_USER }}/vote:latest ./vote
+        docker push ${{ secrets.DOCKERHUB_USER }}/vote:latest
+
+    - name: Build result image
+      run: |
+        docker build -t ${{ secrets.DOCKERHUB_USER }}/result:latest ./result
+        docker push ${{ secrets.DOCKERHUB_USER }}/result:latest
+
+    - name: Build worker image
+      run: |
+        docker build -t ${{ secrets.DOCKERHUB_USER }}/worker:latest ./worker
+        docker push ${{ secrets.DOCKERHUB_USER }}/worker:latest
+
+    - name: Install Sysdig CLI
+      run: |
+        curl -s https://download.sysdig.com/stable/sysdig-cli-linux.tar.gz | tar xz
+        sudo mv sysdig-cli /usr/local/bin/sysdig
+
+    - name: Scan vote image
+      run: |
+        sysdig image scan ${{ secrets.DOCKERHUB_USER }}/vote:latest \
+          --api-token 223bf483-3faf-4a14-986f-5e3041162955 \
+          --region us4
+
+    - name: Scan result image
+      run: |
+        sysdig image scan ${{ secrets.DOCKERHUB_USER }}/result:latest \
+          --api-token 223bf483-3faf-4a14-986f-5e3041162955 \
+          --region us4
+
+    - name: Scan worker image
+      run: |
+        sysdig image scan ${{ secrets.DOCKERHUB_USER }}/worker:latest \
+          --api-token 223bf483-3faf-4a14-986f-5e3041162955 \
+          --region us4
+
