@@ -1,57 +1,66 @@
-#test commit for sysdig scan
-name: Build & Scan Voting App
+name: Build & Scan Voting App Images
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  pull_request:
 
 jobs:
-  build_and_scan:
+  build-and-scan:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
+      # ---- DockerHub Login ----
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build vote image
+      # ---- Build & Push Images ----
+      - name: Build & push vote image
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USER }}/vote:latest ./vote
           docker push ${{ secrets.DOCKERHUB_USER }}/vote:latest
 
-      - name: Build result image
+      - name: Build & push result image
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USER }}/result:latest ./result
           docker push ${{ secrets.DOCKERHUB_USER }}/result:latest
 
-      - name: Build worker image
+      - name: Build & push worker image
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USER }}/worker:latest ./worker
           docker push ${{ secrets.DOCKERHUB_USER }}/worker:latest
 
+      # ---- Install Sysdig CLI ----
       - name: Install Sysdig CLI
         run: |
           curl -s https://download.sysdig.com/stable/sysdig-cli-linux.tar.gz | tar xz
           sudo mv sysdig-cli /usr/local/bin/sysdig
 
+      # ---- Sysdig Scans ----
       - name: Scan vote image
+        env:
+          SYSDIG_SECURE_API_TOKEN: ${{ secrets.SYSDIG_SECURE_API_TOKEN }}
+          SYSDIG_REGION: ${{ secrets.SYSDIG_REGION }}
         run: |
-          sysdig image scan ${{ secrets.DOCKERHUB_USER }}/vote:latest --api-token ${{ secrets.SYSDIG_TOKEN }}
+          sysdig image scan ${{ secrets.DOCKERHUB_USER }}/vote:latest
 
       - name: Scan result image
+        env:
+          SYSDIG_SECURE_API_TOKEN: ${{ secrets.SYSDIG_SECURE_API_TOKEN }}
+          SYSDIG_REGION: ${{ secrets.SYSDIG_REGION }}
         run: |
-          sysdig image scan ${{ secrets.DOCKERHUB_USER }}/result:latest --api-token ${{ secrets.SYSDIG_TOKEN }}
+          sysdig image scan ${{ secrets.DOCKERHUB_USER }}/result:latest
 
       - name: Scan worker image
+        env:
+          SYSDIG_SECURE_API_TOKEN: ${{ secrets.SYSDIG_SECURE_API_TOKEN }}
+          SYSDIG_REGION: ${{ secrets.SYSDIG_REGION }}
         run: |
-          sysdig image scan ${{ secrets.DOCKERHUB_USER }}/worker:latest --api-token ${{ secrets.SYSDIG_TOKEN }}
+          sysdig image scan ${{ secrets.DOCKERHUB_USER }}/worker:latest
 
