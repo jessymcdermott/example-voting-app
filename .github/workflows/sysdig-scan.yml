@@ -36,8 +36,13 @@ jobs:
 
     - name: Install Sysdig CLI
       run: |
-        curl -L -s https://download.sysdig.com/stable/sysdig-cli-linux.tar.gz | tar xz
+        SYS_DIG_CLI_VERSION="1.9.0"
+        curl -L -o sysdig-cli.tar.gz \
+          https://github.com/draios/sysdig-cli/releases/download/v${SYS_DIG_CLI_VERSION}/sysdig-cli-linux.tar.gz
+        tar -xzf sysdig-cli.tar.gz
         sudo mv sysdig-cli /usr/local/bin/sysdig
+
+
 
     - name: Scan vote image
       run: |
