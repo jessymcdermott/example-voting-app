@@ -36,7 +36,7 @@ jobs:
 
     - name: Install Sysdig CLI
       run: |
-        SYS_DIG_CLI_VERSION="1.9.0"
+        SYS_DIG_CLI_VERSION="1.14.0"
         wget -O sysdig-cli.tar.gz \
         https://github.com/draios/sysdig-cli/releases/download/v${SYS_DIG_CLI_VERSION}/sysdig-cli-linux.tar.gz
         tar -xzf sysdig-cli.tar.gz
