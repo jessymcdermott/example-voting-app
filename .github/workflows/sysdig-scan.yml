@@ -36,7 +36,7 @@ jobs:
 
     - name: Install Sysdig CLI
       run: |
-        curl -s https://download.sysdig.com/stable/sysdig-cli-linux.tar.gz | tar xz
+        curl -L -s https://download.sysdig.com/stable/sysdig-cli-linux.tar.gz | tar xz
         sudo mv sysdig-cli /usr/local/bin/sysdig
 
     - name: Scan vote image
