@@ -1,0 +1,23 @@
+name: Sysdig IaC Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  iac-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Sysdig Secure CLI (Sysdig IaC)
+        run: |
+          curl -sSfL https://download.sysdig.com/stable/sysdig-secure-cli/install.sh | sudo bash
+
+      - name: Run IaC Scan
+        run: |
+          sysdig-secure iac scan .
