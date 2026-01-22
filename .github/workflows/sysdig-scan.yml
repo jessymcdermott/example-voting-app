@@ -46,7 +46,7 @@ jobs:
       env:
         SYSDIG_API_TOKEN: ${{ secrets.SYSDIG_API_TOKEN }}
         SYSDIG_REGION: us4
-        SYSDIG_API_URL: https://api.us4.sysdig.com
+        SYSDIG_APIURL: https://api.us4.sysdig.com
       run: |
         sysdig-cli-scanner image scan ${{ secrets.DOCKERHUB_USER }}/vote:latest
 
