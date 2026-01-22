@@ -42,22 +42,23 @@ jobs:
         sudo mv sysdig-cli-scanner /usr/local/bin/
         sysdig-cli-scanner --version
 
-
-    - name: Scan vote image
+    - name: Scan image with Sysdig
+      env:
+        SYSDIG_API_TOKEN: ${{ secrets.SYSDIG_API_TOKEN }}
       run: |
-        sysdig image scan ${{ secrets.DOCKERHUB_USER }}/vote:latest \
-          --api-token 223bf483-3faf-4a14-986f-5e3041162955 \
+        sysdig-cli-scanner image scan ***/vote:latest \
+          --api-token $SYSDIG_API_TOKEN \
           --region us4
 
     - name: Scan result image
       run: |
         sysdig image scan ${{ secrets.DOCKERHUB_USER }}/result:latest \
-          --api-token 223bf483-3faf-4a14-986f-5e3041162955 \
+          --api-token $SYSDIG_API_TOKEN \
           --region us4
 
     - name: Scan worker image
       run: |
         sysdig image scan ${{ secrets.DOCKERHUB_USER }}/worker:latest \
-          --api-token 223bf483-3faf-4a14-986f-5e3041162955 \
+          --api-token $SYSDIG_API_TOKEN \
           --region us4
 
