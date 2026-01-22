@@ -44,7 +44,7 @@ jobs:
 
     - name: Scan vote image with Sysdig
       env:
-        SYSDIG_API_TOKEN: 223bf483-3faf-4a14-986f-5e3041162955
+        SECURE_API_TOKEN: ${{ secrets.SYSDIG_API_TOKEN }}
         SYSDIG_REGION: us4
       run: |
         sysdig-cli-scanner image scan ${{ secrets.DOCKERHUB_USER }}/vote:latest \
@@ -52,14 +52,14 @@ jobs:
 
     - name: Scan result image with Sysdig
       env:
-        SYSDIG_API_TOKEN: 223bf483-3faf-4a14-986f-5e3041162955
+        SECURE_API_TOKEN: ${{ secrets.SYSDIG_API_TOKEN }}
         SYSDIG_REGION: us4
       run: |
         sysdig-cli-scanner image scan ${{ secrets.DOCKERHUB_USER }}/result:latest
 
     - name: Scan worker image with Sysdig
       env:
-        SYSDIG_API_TOKEN: 223bf483-3faf-4a14-986f-5e3041162955
+        SECURE_API_TOKEN: ${{ secrets.SYSDIG_API_TOKEN }}
         SYSDIG_REGION: us4
       run: |
         sysdig-cli-scanner image scan ${{ secrets.DOCKERHUB_USER }}/worker:latest
